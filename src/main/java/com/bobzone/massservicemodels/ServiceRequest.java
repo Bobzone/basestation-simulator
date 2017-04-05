@@ -13,6 +13,7 @@ public class ServiceRequest {
     private String id;
 
     public ServiceRequest() {
+        id = "randomlygeneratedid";
     }
 
     void addPropertyChangeListener(final PropertyChangeListener l) {
@@ -20,6 +21,13 @@ public class ServiceRequest {
     }
 
     public void finish() {
+        id = "";
         support.firePropertyChange("id", id, "");
+        support.firePropertyChange("request", null, null);
+        support.firePropertyChange("busy", null, false);
+    }
+
+    public String getId() {
+        return id;
     }
 }

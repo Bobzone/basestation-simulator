@@ -29,7 +29,7 @@ public class Channel implements PropertyChangeListener{
     }
 
     @Override
-    public void propertyChange(final PropertyChangeEvent evt) {
+    public void propertyChange(PropertyChangeEvent evt) {
         request = null;
         busy = false;
     }

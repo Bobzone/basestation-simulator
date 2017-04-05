@@ -35,15 +35,16 @@ class ChannelSpec extends Specification {
         given:
         def channel = new Channel()
         def request = new ServiceRequest()
+        request.addPropertyChangeListener(channel)
         when:
         channel.setRequest(request)
         request.finish();
         then:
-        channel.isBusy()
+        assert !channel.isBusy() && channel.request == null
     }
 
 //    @Unroll
-//    def "you can assign only one request to one channel at the same time"() {
+//    TODO - def "you can assign only one request to one channel at the same time"() {
 //        given:
 //        def channel = new Channel()
 //        def request = new ServiceRequest()
