@@ -43,17 +43,33 @@ class ChannelSpec extends Specification {
         assert !channel.isBusy() && channel.request == null
     }
 
-//    @Unroll
-//    TODO - def "you can assign only one request to one channel at the same time"() {
-//        given:
-//        def channel = new Channel()
-//        def request = new ServiceRequest()
-//        def request2 = new ServiceRequest()
-//        when:
-//        channel.setRequest(request)
-//        channel.setRequest(request2)
-//        then:
-//        thrown IllegalStateException
-//        channel.getRequest() == request
-//    }
+    @Unroll
+    def "you can assign only one request to one channel at the same time"() {
+        given:
+        def channel = new Channel()
+        def request = new ServiceRequest()
+        def request2 = new ServiceRequest()
+        when:
+        channel.setRequest(request)
+        channel.setRequest(request2)
+        then:
+        channel.getRequest() == request
+        thrown IllegalStateException
+    }
+
+    @Unroll
+    def "When first request is done, you can assign the channel to second request"() {
+        given:
+        def channel = new Channel()
+        def request = new ServiceRequest()
+        def request2 = new ServiceRequest()
+        request.addPropertyChangeListener(channel)
+        request2.addPropertyChangeListener(channel)
+        when:
+        channel.setRequest(request)
+        request.finish()
+        channel.setRequest(request2)
+        then:
+        channel.getRequest() == request2
+    }
 }

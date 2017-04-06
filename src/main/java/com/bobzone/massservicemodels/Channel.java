@@ -11,7 +11,8 @@ public class Channel implements PropertyChangeListener{
     private boolean busy;
     private ServiceRequest request;
 
-    public Channel() {
+    public Channel(){
+        request = null;
         this.busy = false;
     }
 
@@ -24,8 +25,12 @@ public class Channel implements PropertyChangeListener{
     }
 
     public void setRequest(final ServiceRequest request) {
-        this.request = request;
-        busy = true;
+        if (this.request == null && !busy) {
+            this.request = request;
+            busy = true;
+        } else {
+            throw new IllegalStateException("Channel " + this.toString() + " is already processing a request.");
+        }
     }
 
     @Override
