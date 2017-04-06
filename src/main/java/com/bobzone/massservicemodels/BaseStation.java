@@ -9,9 +9,15 @@ import java.util.List;
 public class BaseStation {
 
     List<Channel> channelList = new ArrayList<>();
+    private List<ServiceRequest> queue = new ArrayList<>();
 
-    public void assignChannel(final ServiceRequest sr) {
-//        channelList.get(0).setRequest();
+    private void assignChannel(final ServiceRequest request) {
+        try {
+            channelList.get(0).setRequest(request);
+            queue.remove(0);
+        } catch (IllegalStateException ex){
+            System.out.println(ex.getMessage() + " is currently busy. Leaving request in the queue.");
+        }
     }
 
     public BaseStation() {
@@ -24,5 +30,10 @@ public class BaseStation {
         for (int i = 0; i < numberOfChannels; i++) {
             channelList.add(new Channel());
         }
+    }
+
+    public void acceptRequest(final ServiceRequest request) {
+        queue.add(request);
+        assignChannel(request);
     }
 }
