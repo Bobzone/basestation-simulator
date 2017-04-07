@@ -92,7 +92,7 @@ class BaseStationSpec extends Specification {
     def "when base station has one free channel but two requests come, one gets assigned to a free channel, the other one stays in queue"() {
         given:
         BaseStation bs = new BaseStation()
-        for (int i = 1; i<bs.channelList.size(); i++){
+        for (int i = 1; i < bs.channelList.size(); i++) {
             bs.channelList[i].setRequest(new ServiceRequest());
         }
         def request = new ServiceRequest()
@@ -103,5 +103,29 @@ class BaseStationSpec extends Specification {
         then:
         bs.queue.stream().noneMatch { it -> it == request }
         bs.queue.stream().anyMatch { it -> it == request2 }
+    }
+
+    @Unroll
+    def "when base station channels are busy without any particular order, newly incoming requests are assigned to spare free channels"() {
+        given:
+        def station = new BaseStation()
+        def request1 = new ServiceRequest()
+        def request2 = new ServiceRequest()
+        def request3 = new ServiceRequest()
+        def request4 = new ServiceRequest()
+        station.channelList[1].setRequest(new ServiceRequest())
+        station.channelList[2].setRequest(new ServiceRequest())
+        station.channelList[5].setRequest(new ServiceRequest())
+        station.channelList[7].setRequest(new ServiceRequest())
+        when:
+        station.acceptRequest(request1)
+        station.acceptRequest(request2)
+        station.acceptRequest(request3)
+        station.acceptRequest(request4)
+        then:
+        station.channelList[0].getRequest() == request1
+        station.channelList[3].getRequest() == request2
+        station.channelList[4].getRequest() == request3
+        station.channelList[6].getRequest() == request4
     }
 }

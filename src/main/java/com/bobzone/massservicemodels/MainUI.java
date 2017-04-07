@@ -7,6 +7,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Created by epiobob on 2017-04-04.
@@ -16,6 +17,9 @@ import com.vaadin.ui.UI;
 public class MainUI extends UI {
 
     private HorizontalLayout mainLayout;
+
+    @Autowired
+    BaseStation baseStation;
 
     @Override
     protected void init(VaadinRequest vaadinRequest) {
