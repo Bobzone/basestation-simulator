@@ -12,8 +12,14 @@ public class ServiceRequest {
     PropertyChangeSupport support = new PropertyChangeSupport(this);
 
     private String id;
+    double callLength;
 
-    public ServiceRequest() {
+    public ServiceRequest(final double callLength) {
+        this.callLength = callLength;
+        id = UUID.randomUUID().toString();
+    }
+
+    public ServiceRequest(){
         id = UUID.randomUUID().toString();
     }
 

@@ -1,0 +1,24 @@
+package com.bobzone.massservicemodels
+
+import spock.lang.Specification
+import spock.lang.Unroll
+
+/**
+ * Created by epiobob on 2017-04-07.
+ */
+class RNGSpec extends Specification {
+
+    @Unroll
+    def "generating normal distribution with mean 100 and variance 5 works"() {
+        when:
+        double MEAN = 100.0f;
+        double VARIANCE = 5.0f;
+        then:
+        for (int idx = 1; idx <= 100000; ++idx) {
+            def gaussian = RNG.getGaussian(MEAN, VARIANCE)
+//            println("Generated : " + gaussian);
+            assert gaussian > 0
+        }
+    }
+
+}
