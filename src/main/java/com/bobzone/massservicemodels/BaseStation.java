@@ -9,6 +9,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Created by epiobob on 2017-04-05.
@@ -17,7 +18,9 @@ import java.util.List;
 @UIScope
 public class BaseStation implements Runnable, PropertyChangeListener {
     private static final Logger log = LoggerFactory.getLogger(BaseStation.class);
+    private static AtomicInteger ID_GENERATOR = new AtomicInteger(1);
 
+    private String id;
     protected List<Channel> channelList = new ArrayList<>();
     protected List<ServiceRequest> queue = new ArrayList<>();
 
@@ -36,6 +39,7 @@ public class BaseStation implements Runnable, PropertyChangeListener {
 
     public BaseStation() {
         log.info("Created default BaseStation with 8 channels.");
+        id = String.valueOf(ID_GENERATOR.getAndIncrement());
         for (int i = 0; i < 8; i++) {
             channelList.add(new Channel());
         }
@@ -43,6 +47,7 @@ public class BaseStation implements Runnable, PropertyChangeListener {
 
     public BaseStation(int numberOfChannels) {
         log.info("Created BaseStation with {} channels. ", numberOfChannels);
+        id = String.valueOf(ID_GENERATOR.getAndIncrement());
         for (int i = 0; i < numberOfChannels; i++) {
             channelList.add(new Channel());
         }
@@ -109,5 +114,12 @@ public class BaseStation implements Runnable, PropertyChangeListener {
                 c.freeChannel();
             }
         }
+    }
+
+    @Override
+    public String toString() {
+        return "BaseStation{" +
+                "id='" + id + '\'' +
+                '}';
     }
 }
