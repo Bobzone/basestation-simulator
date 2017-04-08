@@ -18,6 +18,9 @@ import java.util.concurrent.*;
 @Theme("valo")
 public class MainUI extends UI {
 
+    // TODO - to be implemented for user input
+    private static final double LAMBDA_INPUT_PARAM = 2.0;
+
     private HorizontalLayout mainLayout;
 
 //    TODO - read about autowiring this for your lab
@@ -38,25 +41,13 @@ public class MainUI extends UI {
 //      Request queueing / handling backend
         ScheduledExecutorService executorService = Executors.newScheduledThreadPool(8);
 
-//        for (int i = 0; i < 9; i++) {
-//            MobileStation ms = new MobileStation(RNG.getPoisson(2.0));
-//            ScheduledFuture schedFuture = executorService.scheduleAtFixedRate(ms, (long) ms.requestCreationInterval, (long) ms.requestCreationInterval, TimeUnit.SECONDS);
-//        }
-//
-//        BaseStation bs = new BaseStation();
-//        ScheduledFuture schedFuture = executorService.scheduleAtFixedRate(bs, 1, 1, TimeUnit.SECONDS);
+        for (int i = 0; i < 9; i++) {
+            MobileStation ms = new MobileStation(RNG.getPoisson(2.0));
+            ScheduledFuture schedFuture = executorService.scheduleAtFixedRate(ms, 1L, (long) RNG.getPoisson(LAMBDA_INPUT_PARAM), TimeUnit.SECONDS);
+        }
 
-//        ExecutorService consumer = new ThreadPoolExecutor(1,4,30, TimeUnit.SECONDS,new LinkedBlockingQueue<Runnable>(100));
-
-//        ScheduledExecutorService requestHandlingService = new ScheduledThreadPoolExecutor(1);
-
-//        ExecutorService producer = Executors.newSingleThreadExecutor();
-
-//        ScheduledExecutorService requestGeneratorService = new ScheduledThreadPoolExecutor(1);
-
-//        Runnable mobileStation = new MobileStation(RNG.getPoisson(2.0), requestHandlingService);
-//        requestGeneratorService.submit(mobileStation);
-
+        BaseStation bs = new BaseStation();
+        ScheduledFuture schedFuture = executorService.scheduleAtFixedRate(bs, 1, 1, TimeUnit.SECONDS);
     }
 
     private void addProcessingQueue() {

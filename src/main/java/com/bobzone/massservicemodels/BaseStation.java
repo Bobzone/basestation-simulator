@@ -13,8 +13,8 @@ import java.util.List;
 @UIScope
 public class BaseStation implements Runnable{
 
-    List<Channel> channelList = new ArrayList<>();
-    private List<ServiceRequest> queue = new ArrayList<>();
+    protected List<Channel> channelList = new ArrayList<>();
+    protected List<ServiceRequest> queue = new ArrayList<>();
 
     private void assignChannel(final ServiceRequest request) {
         try {
