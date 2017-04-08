@@ -3,6 +3,8 @@ package com.bobzone.massservicemodels;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.UIScope;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,7 +13,7 @@ import java.util.List;
  */
 @SpringComponent
 @UIScope
-public class BaseStation implements Runnable {
+public class BaseStation implements Runnable, PropertyChangeListener {
 
     protected List<Channel> channelList = new ArrayList<>();
     protected List<ServiceRequest> queue = new ArrayList<>();
@@ -83,6 +85,17 @@ public class BaseStation implements Runnable {
             assignChannelFromQueue();
         } catch (NoSuchFieldException e) {
             System.out.println(e.getMessage());
+        }
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        System.err.println("propertyChange() method on Channel " + this);
+        ServiceRequest requestSendingEvent = (ServiceRequest) evt.getOldValue();
+        for (Channel c : channelList) {
+            if (c.getRequest() == requestSendingEvent) {
+                c.freeChannel();
+            }
         }
     }
 }

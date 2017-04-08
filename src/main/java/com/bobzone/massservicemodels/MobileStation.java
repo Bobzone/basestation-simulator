@@ -13,7 +13,7 @@ public class MobileStation implements Runnable {
     private BaseStation connectedBaseStation;
     private ServiceRequest request;
 
-    public MobileStation(BaseStation baseStationToConnect){
+    public MobileStation(BaseStation baseStationToConnect) {
         connectedBaseStation = baseStationToConnect;
     }
 
@@ -22,10 +22,12 @@ public class MobileStation implements Runnable {
         return request;
     }
 
-    public void sendRequestToBaseStation() {
+    public ServiceRequest sendRequestToBaseStation() {
         if (null != connectedBaseStation) {
             final ServiceRequest serviceRequest = new ServiceRequest();
+            serviceRequest.addPropertyChangeListener(connectedBaseStation);
             connectedBaseStation.acceptRequest(serviceRequest);
+            return serviceRequest;
         } else {
             throw new NullPointerException("Attempt to send request, but given MS has no connected BS.");
         }

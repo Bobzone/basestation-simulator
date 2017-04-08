@@ -33,14 +33,13 @@ class ChannelSpec extends Specification {
     @Unroll
     def "when request is processed and finished channel is free again"() {
         given:
-        def channel = new Channel()
-        def request = new ServiceRequest()
-        request.addPropertyChangeListener(channel)
+        def station = new BaseStation()
+        def ms = new MobileStation(station)
         when:
-        channel.setRequest(request)
-        request.finish();
+        def request = ms.sendRequestToBaseStation()
+        request.finish()
         then:
-        assert !channel.isBusy() && channel.request == null
+        station.channelList.stream().noneMatch { c -> c.getRequest() == request }
     }
 
     @Unroll
@@ -63,13 +62,23 @@ class ChannelSpec extends Specification {
         def channel = new Channel()
         def request = new ServiceRequest()
         def request2 = new ServiceRequest()
-        request.addPropertyChangeListener(channel)
-        request2.addPropertyChangeListener(channel)
         when:
         channel.setRequest(request)
-        request.finish()
         channel.setRequest(request2)
         then:
-        channel.getRequest() == request2
+        thrown IllegalStateException
+        channel.getRequest() == request
+    }
+
+    @Unroll
+    def "You can free channel on demand"() {
+        given:
+        def channel = new Channel()
+        def request = new ServiceRequest()
+        channel.setRequest(request)
+        when:
+        channel.freeChannel()
+        then:
+        !channel.isBusy()
     }
 }

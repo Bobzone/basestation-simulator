@@ -7,7 +7,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * Created by epiobob on 2017-04-05.
  */
-public class Channel implements PropertyChangeListener{
+public class Channel {
 
     private String id;
     private static AtomicInteger ID_GENERATOR = new AtomicInteger(1000);
@@ -24,6 +24,11 @@ public class Channel implements PropertyChangeListener{
         return busy;
     }
 
+    public void freeChannel(){
+        request = null;
+        busy = false;
+    }
+
     public ServiceRequest getRequest() {
         return request;
     }
@@ -37,12 +42,6 @@ public class Channel implements PropertyChangeListener{
         }
     }
 
-    @Override
-    public void propertyChange(PropertyChangeEvent evt) {
-        System.err.println("propertyChange() method on Channel " + this);
-        request = null;
-        busy = (boolean) evt.getNewValue();
-    }
 
     @Override
     public String toString() {

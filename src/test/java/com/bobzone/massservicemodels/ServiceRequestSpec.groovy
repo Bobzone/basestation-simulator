@@ -27,9 +27,9 @@ class ServiceRequestSpec extends Specification {
     @Unroll
     def "when ServiceRequest is finished, id is set to empty"() {
         given:
-        def request = new ServiceRequest()
-        def channel = new Channel()
-        request.addPropertyChangeListener(channel)
+        def station = new BaseStation()
+        def ms = new MobileStation(station)
+        def request = ms.sendRequestToBaseStation()
         when:
         request.finish()
         then:
