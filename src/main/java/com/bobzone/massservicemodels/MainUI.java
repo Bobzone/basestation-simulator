@@ -20,12 +20,12 @@ import java.util.concurrent.TimeUnit;
 @Theme("valo")
 public class MainUI extends UI {
     // TODO - to be implemented for user input
-    public static final double LAMBDA_INPUT_PARAM = 2.0;
+    public static final double LAMBDA_INPUT_PARAM = 15.0;
     public static final double MEAN_INPUT_PARAM = 30.0;
     public static final double VARIATION_PARAM = 5.0;
 
     private HorizontalLayout mainLayout;
-
+    private ScheduledExecutorService executorService = Executors.newScheduledThreadPool(8);
 //    TODO - read about autowiring this for your lab
 //    @Autowired
 //    BaseStation baseStation;
@@ -41,17 +41,6 @@ public class MainUI extends UI {
         addButtons();
         addProcessingQueue();
 
-//      Request queueing / handling backend
-        ScheduledExecutorService executorService = Executors.newScheduledThreadPool(8);
-
-        BaseStation bs = new BaseStation();
-        ScheduledFuture schedFutureBaseStationTasks = executorService.scheduleAtFixedRate(bs, 1, 1, TimeUnit.SECONDS);
-
-        for (int i = 0; i < 9; i++) {
-//            MobileStation ms = new MobileStation(RNG.getPoisson(2.0));
-            MobileStation ms = new MobileStation(bs);
-            ScheduledFuture schedFutureMobileStationTasks = executorService.scheduleAtFixedRate(ms, 1L, (long) RNG.getPoisson(LAMBDA_INPUT_PARAM), TimeUnit.SECONDS);
-        }
     }
 
     private void addProcessingQueue() {
@@ -60,6 +49,19 @@ public class MainUI extends UI {
     private void addButtons() {
         Button buttonStart = new Button("Start");
         Button buttonStop = new Button("Stop");
+
+        buttonStart.addClickListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(final Button.ClickEvent event) {
+                startBackend();
+            }
+        });
+        buttonStop.addClickListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(final Button.ClickEvent event) {
+                stopBackend();
+            }
+        });
 
         mainLayout.addComponent(buttonStart);
         mainLayout.addComponent(buttonStop);
@@ -76,5 +78,21 @@ public class MainUI extends UI {
     private void setupLayouts() {
         mainLayout = new HorizontalLayout();
         setContent(mainLayout);
+    }
+
+    private void startBackend() {
+//      Request queueing / handling backend
+        BaseStation bs = new BaseStation();
+        ScheduledFuture schedFutureBaseStationTasks = executorService.scheduleAtFixedRate(bs, 1, 1, TimeUnit.SECONDS);
+
+        for (int i = 0; i < 9; i++) {
+//            MobileStation ms = new MobileStation(RNG.getPoisson(2.0));
+            MobileStation ms = new MobileStation(bs);
+            ScheduledFuture schedFutureMobileStationTasks = executorService.scheduleAtFixedRate(ms, 1L, (long) RNG.getPoisson(LAMBDA_INPUT_PARAM), TimeUnit.SECONDS);
+        }
+    }
+
+    private void stopBackend() {
+        executorService.shutdown();
     }
 }

@@ -1,18 +1,22 @@
 package com.bobzone.massservicemodels;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Created by epiobob on 2017-04-05.
  */
 public class Channel {
+    private static final Logger log = LoggerFactory.getLogger(Channel.class);
 
     private String id;
-    private static AtomicInteger ID_GENERATOR = new AtomicInteger(1000);
+    private static AtomicInteger ID_GENERATOR = new AtomicInteger(9000);
     private boolean busy;
     private ServiceRequest request;
 
-    public Channel(){
+    public Channel() {
         this.id = String.valueOf(ID_GENERATOR.getAndIncrement());
         request = null;
         this.busy = false;
@@ -22,7 +26,8 @@ public class Channel {
         return busy;
     }
 
-    public void freeChannel(){
+    public void freeChannel() {
+        log.info("{} freed.", this);
         request = null;
         busy = false;
     }

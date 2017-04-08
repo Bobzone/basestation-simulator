@@ -20,8 +20,9 @@ class ServiceRequestSpec extends Specification {
     def "when ServiceRequest is created it has a random id"() {
         when:
         def request = new ServiceRequest()
+        def request2 = new ServiceRequest()
         then:
-        request.id != null;
+        request.id != request2.id
     }
 
     @Unroll

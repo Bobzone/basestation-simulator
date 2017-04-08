@@ -2,6 +2,8 @@ package com.bobzone.massservicemodels;
 
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.UIScope;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -14,6 +16,7 @@ import java.util.List;
 @SpringComponent
 @UIScope
 public class BaseStation implements Runnable, PropertyChangeListener {
+    private static final Logger log = LoggerFactory.getLogger(BaseStation.class);
 
     protected List<Channel> channelList = new ArrayList<>();
     protected List<ServiceRequest> queue = new ArrayList<>();
@@ -22,26 +25,31 @@ public class BaseStation implements Runnable, PropertyChangeListener {
         try {
             findFreeChannel().setRequest(request);
             queue.remove(request);
+            request.startFinishWorker();
+            log.info("Free channel found. {} has assigned channel and is removed from {} queue.", request, this);
         } catch (IllegalStateException ex) {
-            System.out.println(ex.getMessage() + " is currently busy. Leaving request in the queue.");
+            log.info(ex.getMessage() + " is currently busy. Leaving request in the queue.");
         } catch (NoSuchFieldException e) {
-            System.out.println(e.getMessage() + " Leaving request in the queue.");
+            log.info(e.getMessage() + " Leaving request in the queue.");
         }
     }
 
     public BaseStation() {
+        log.info("Created default BaseStation with 8 channels.");
         for (int i = 0; i < 8; i++) {
             channelList.add(new Channel());
         }
     }
 
     public BaseStation(int numberOfChannels) {
+        log.info("Created BaseStation with {} channels. ", numberOfChannels);
         for (int i = 0; i < numberOfChannels; i++) {
             channelList.add(new Channel());
         }
     }
 
     public void acceptRequest(final ServiceRequest request) {
+        log.info("Accepting {}. Request lands on queue, BS checks if any channel is free.", request);
         queue.add(request);
         assignChannel(request);
     }
@@ -55,42 +63,46 @@ public class BaseStation implements Runnable, PropertyChangeListener {
         throw new NoSuchFieldException("All channels are currently busy.");
     }
 
-    private void assignChannelFromQueue() throws NoSuchFieldException {
+    protected void assignChannelFromQueue() throws NoSuchFieldException {
         final Channel freeChannel = findFreeChannel();
-        final ServiceRequest request = queue.get(0);
-        freeChannel.setRequest(request);
-        queue.remove(request);
-//        TODO - probably we should move all the items in the queue to left when there are items moving from queue to channelList
-//        for (int i = 1; i < queue.size(); i++) {
-//            if (queue.get(i - 1) == null) {
-//                final ServiceRequest serviceRequest = queue.get(i);
-//                queue.add(i - 1, request);
-//                queue.remove(i);
-//            }
-//        }
+        if (queue.size() != 0) {
+            final ServiceRequest request = queue.get(0);
+            freeChannel.setRequest(request);
+            queue.remove(request);
+            log.info("Periodic channel assignment moved {} from queue to {}", request, freeChannel);
+
+            queue = buildNewQueue();
+        } else {
+            throw new NoSuchFieldException("There are no requests waiting in the queue. Periodic channel assignment did nothing.");
+        }
     }
 
-    public Channel findRequest(final ServiceRequest request) throws NoSuchFieldException {
-        for (Channel c : channelList) {
-            if (request == c.getRequest()) {
-                return c;
+//    TODO - probably TERRIBLY inefficient. But it works.
+    private List<ServiceRequest> buildNewQueue(){
+        log.info("Moved all items in queue to the left.");
+        List<ServiceRequest> newQueue = new ArrayList<>();
+
+        for (ServiceRequest sr : queue){
+            if (sr != null){
+                newQueue.add(sr);
             }
         }
-        throw new NoSuchFieldException("Given request " + request + " wasn't found in channels of the BaseStation");
+
+        return newQueue;
     }
 
     @Override
     public void run() {
+        log.info("Periodic channel assignment running.");
         try {
             assignChannelFromQueue();
         } catch (NoSuchFieldException e) {
-            System.out.println(e.getMessage());
+            log.info(e.getMessage());
         }
     }
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        System.err.println("propertyChange() method on Channel " + this);
         ServiceRequest requestSendingEvent = (ServiceRequest) evt.getOldValue();
         for (Channel c : channelList) {
             if (c.getRequest() == requestSendingEvent) {

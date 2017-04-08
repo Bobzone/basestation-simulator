@@ -128,4 +128,14 @@ class BaseStationSpec extends Specification {
         station.channelList[4].getRequest() == request3
         station.channelList[6].getRequest() == request4
     }
+
+    @Unroll
+    def "test 1"() {
+        given:
+        def bs = new BaseStation();
+        when:
+        bs.assignChannelFromQueue()
+        then:
+        thrown NoSuchFieldException
+    }
 }
