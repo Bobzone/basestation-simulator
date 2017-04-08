@@ -38,13 +38,13 @@ public class MainUI extends UI {
 //      Request queueing / handling backend
         ScheduledExecutorService executorService = Executors.newScheduledThreadPool(8);
 
-        for (int i = 0; i < 9; i++) {
-            MobileStation ms = new MobileStation(RNG.getPoisson(2.0));
-            ScheduledFuture schedFuture = executorService.scheduleAtFixedRate(ms, (long) ms.requestCreationInterval, (long) ms.requestCreationInterval, TimeUnit.SECONDS);
-        }
-
-        BaseStation bs = new BaseStation();
-        ScheduledFuture schedFuture = executorService.scheduleAtFixedRate(bs, 1, 1, TimeUnit.SECONDS);
+//        for (int i = 0; i < 9; i++) {
+//            MobileStation ms = new MobileStation(RNG.getPoisson(2.0));
+//            ScheduledFuture schedFuture = executorService.scheduleAtFixedRate(ms, (long) ms.requestCreationInterval, (long) ms.requestCreationInterval, TimeUnit.SECONDS);
+//        }
+//
+//        BaseStation bs = new BaseStation();
+//        ScheduledFuture schedFuture = executorService.scheduleAtFixedRate(bs, 1, 1, TimeUnit.SECONDS);
 
 //        ExecutorService consumer = new ThreadPoolExecutor(1,4,30, TimeUnit.SECONDS,new LinkedBlockingQueue<Runnable>(100));
 

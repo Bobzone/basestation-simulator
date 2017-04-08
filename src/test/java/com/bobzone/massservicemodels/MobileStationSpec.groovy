@@ -28,14 +28,23 @@ class MobileStationSpec extends Specification {
     }
 
     @Unroll
-    def "when mobile station starts making calls it generates requests at fixed rate"() {
+    def "Try to send request, but MobileStation was created without specifying connected Base Station"() {
         given:
-        def station = new MobileStation(1)
+        def bs = new BaseStation()
+        def ms = new MobileStation(2.0)
         when:
-        station.startMakingCalls()
-        Thread.sleep(2000)
-        station.stopMakingCalls()
+        ms.sendRequestToBaseStation();
         then:
-        station.request != null
+        thrown NullPointerException
+    }
+    @Unroll
+    def "When sending requests to a certain BaseStation, requests appear on the BS"() {
+        given:
+        def bs = new BaseStation()
+        def ms = new MobileStation(bs, 2.0)
+        when:
+        ms.sendRequestToBaseStation();
+        then:
+        bs.channelList.get(0).busy
     }
 }

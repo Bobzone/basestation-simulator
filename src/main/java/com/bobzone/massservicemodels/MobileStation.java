@@ -2,6 +2,7 @@ package com.bobzone.massservicemodels;
 
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.UIScope;
+import org.jsoup.Connection;
 import org.springframework.scheduling.annotation.Scheduled;
 
 import java.util.concurrent.ExecutorService;
@@ -14,20 +15,24 @@ import java.util.concurrent.TimeUnit;
  */
 @SpringComponent
 @UIScope
-public class MobileStation implements Runnable {
+public class MobileStation {
 
-    private final ScheduledExecutorService callingService;
-    double requestCreationInterval;
+    private BaseStation connectedBaseStation;
     private ServiceRequest request;
+    double requestCreationInterval;
 
 //    public MobileStation(final double requestCreationInterval, final ScheduledExecutorService callingService){
 //        this.requestCreationInterval = requestCreationInterval;
 //        this.callingService = callingService;
 //    }
 
+    public MobileStation(BaseStation baseStationToConnect, final double requestCreationInterval) {
+        this.connectedBaseStation = baseStationToConnect;
+        this.requestCreationInterval = requestCreationInterval;
+    }
+
     public MobileStation(final double requestCreationInterval) {
         this.requestCreationInterval = requestCreationInterval;
-        callingService = Executors.newSingleThreadScheduledExecutor();
     }
 
     public ServiceRequest generateServiceRequest(final double callLength) {
@@ -35,20 +40,12 @@ public class MobileStation implements Runnable {
         return request;
     }
 
-    public void startMakingCalls() {
-        callingService.scheduleAtFixedRate(this, (long) requestCreationInterval, (long) requestCreationInterval, TimeUnit.SECONDS);
-    }
-
-    public void stopMakingCalls() {
-        callingService.shutdown();
-    }
-
-    @Override
-    public void run() {
-        if (request != null) {
-            request.finish();
+    public void sendRequestToBaseStation() {
+        if (null != connectedBaseStation) {
+            final ServiceRequest serviceRequest = new ServiceRequest();
+            connectedBaseStation.acceptRequest(serviceRequest);
+        } else {
+            throw new NullPointerException("Attempt to send request, but given MS has no connected BS.");
         }
-        generateServiceRequest(RNG.getGaussian(30.0, 5.0));
-        System.out.println(request.toString());
     }
 }
