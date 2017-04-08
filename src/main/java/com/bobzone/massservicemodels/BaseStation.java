@@ -84,7 +84,7 @@ public class BaseStation implements Runnable, PropertyChangeListener {
 
 //    TODO - probably TERRIBLY inefficient. But it works.
     private List<ServiceRequest> buildNewQueue(){
-        log.info("Moved all items in queue to the left.");
+        log.debug("Moved all items in queue to the left.");
         List<ServiceRequest> newQueue = new ArrayList<>();
 
         for (ServiceRequest sr : queue){
@@ -98,7 +98,7 @@ public class BaseStation implements Runnable, PropertyChangeListener {
 
     @Override
     public void run() {
-        log.info("Periodic channel assignment running.");
+        log.debug("Periodic channel assignment running.");
         try {
             assignChannelFromQueue();
         } catch (NoSuchFieldException e) {

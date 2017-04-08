@@ -7,6 +7,8 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -19,6 +21,7 @@ import java.util.concurrent.TimeUnit;
 @SpringUI
 @Theme("valo")
 public class MainUI extends UI {
+    private static final Logger log = LoggerFactory.getLogger(MainUI.class);
     // TODO - to be implemented for user input
     public static final double LAMBDA_INPUT_PARAM = 15.0;
     public static final double MEAN_INPUT_PARAM = 30.0;
@@ -53,12 +56,14 @@ public class MainUI extends UI {
         buttonStart.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(final Button.ClickEvent event) {
+                log.info("Simulation started by user.");
                 startBackend();
             }
         });
         buttonStop.addClickListener(new Button.ClickListener() {
             @Override
             public void buttonClick(final Button.ClickEvent event) {
+                log.info("Simulation ended by user.");
                 stopBackend();
             }
         });

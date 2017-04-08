@@ -27,13 +27,13 @@ public class MobileStation implements Runnable {
     }
 
     public ServiceRequest generateServiceRequest(final double callLength) {
-        log.info("{} generated Service Request on demand.", this);
+        log.info("{} generated ServiceRequest on demand.", this);
         request = new ServiceRequest(callLength);
         return request;
     }
 
     public ServiceRequest sendRequestToBaseStation() {
-        log.info("{} sent request to BaseStation {}.", this, connectedBaseStation);
+        log.info("{} sent request to {}.", this, connectedBaseStation);
         if (null != connectedBaseStation) {
             final ServiceRequest serviceRequest = new ServiceRequest();
             serviceRequest.addPropertyChangeListener(connectedBaseStation);
