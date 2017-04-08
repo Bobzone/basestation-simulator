@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit;
  */
 @SpringComponent
 @UIScope
-public class MobileStation implements Runnable{
+public class MobileStation implements Runnable {
 
     private BaseStation connectedBaseStation;
     private ServiceRequest request;

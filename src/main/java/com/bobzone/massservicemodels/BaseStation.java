@@ -11,7 +11,7 @@ import java.util.List;
  */
 @SpringComponent
 @UIScope
-public class BaseStation implements Runnable{
+public class BaseStation implements Runnable {
 
     protected List<Channel> channelList = new ArrayList<>();
     protected List<ServiceRequest> queue = new ArrayList<>();
@@ -53,8 +53,35 @@ public class BaseStation implements Runnable{
         throw new NoSuchFieldException("All channels are currently busy.");
     }
 
+    private void assignChannelFromQueue() throws NoSuchFieldException {
+        final Channel freeChannel = findFreeChannel();
+        final ServiceRequest request = queue.get(0);
+        freeChannel.setRequest(request);
+        queue.remove(request);
+//        for (int i = 1; i < queue.size(); i++) {
+//            if (queue.get(i - 1) == null) {
+//                final ServiceRequest serviceRequest = queue.get(i);
+//                queue.add(i - 1, request);
+//                queue.remove(i);
+//            }
+//        }
+    }
+
+    public Channel findRequest(final ServiceRequest request) throws NoSuchFieldException {
+        for (Channel c : channelList) {
+            if (request == c.getRequest()) {
+                return c;
+            }
+        }
+        throw new NoSuchFieldException("Given request " + request + " wasn't found in channels of the BaseStation");
+    }
+
     @Override
     public void run() {
-
+        try {
+            assignChannelFromQueue();
+        } catch (NoSuchFieldException e) {
+            System.out.println(e.getMessage());
+        }
     }
 }
