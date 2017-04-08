@@ -25,6 +25,17 @@ class MobileStationSpec extends Specification {
         def generatedRequest = station.generateServiceRequest(RNG.getGaussian(100.0, 5.0))
         then:
         generatedRequest.callLength != null
+    }
 
+    @Unroll
+    def "when mobile station starts making calls it generates requests at fixed rate"() {
+        given:
+        def station = new MobileStation(1)
+        when:
+        station.startMakingCalls()
+        Thread.sleep(2000)
+        station.stopMakingCalls()
+        then:
+        station.request != null
     }
 }

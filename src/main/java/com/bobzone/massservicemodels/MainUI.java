@@ -9,6 +9,8 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.concurrent.*;
+
 /**
  * Created by epiobob on 2017-04-04.
  */
@@ -18,8 +20,12 @@ public class MainUI extends UI {
 
     private HorizontalLayout mainLayout;
 
-    @Autowired
-    BaseStation baseStation;
+//    TODO - read about autowiring this for your lab
+//    @Autowired
+//    BaseStation baseStation;
+//
+//    @Autowired
+//    MobileStation mobileStation;
 
     @Override
     protected void init(VaadinRequest vaadinRequest) {
@@ -28,6 +34,29 @@ public class MainUI extends UI {
         addRunningTimer();
         addButtons();
         addProcessingQueue();
+
+//      Request queueing / handling backend
+        ScheduledExecutorService executorService = Executors.newScheduledThreadPool(8);
+
+        for (int i = 0; i < 9; i++) {
+            MobileStation ms = new MobileStation(RNG.getPoisson(2.0));
+            ScheduledFuture schedFuture = executorService.scheduleAtFixedRate(ms, (long) ms.requestCreationInterval, (long) ms.requestCreationInterval, TimeUnit.SECONDS);
+        }
+
+        BaseStation bs = new BaseStation();
+        ScheduledFuture schedFuture = executorService.scheduleAtFixedRate(bs, 1, 1, TimeUnit.SECONDS);
+
+//        ExecutorService consumer = new ThreadPoolExecutor(1,4,30, TimeUnit.SECONDS,new LinkedBlockingQueue<Runnable>(100));
+
+//        ScheduledExecutorService requestHandlingService = new ScheduledThreadPoolExecutor(1);
+
+//        ExecutorService producer = Executors.newSingleThreadExecutor();
+
+//        ScheduledExecutorService requestGeneratorService = new ScheduledThreadPoolExecutor(1);
+
+//        Runnable mobileStation = new MobileStation(RNG.getPoisson(2.0), requestHandlingService);
+//        requestGeneratorService.submit(mobileStation);
+
     }
 
     private void addProcessingQueue() {

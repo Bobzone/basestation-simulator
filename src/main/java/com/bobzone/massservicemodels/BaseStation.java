@@ -11,7 +11,7 @@ import java.util.List;
  */
 @SpringComponent
 @UIScope
-public class BaseStation {
+public class BaseStation implements Runnable{
 
     private List<Channel> channelList = new ArrayList<>();
     private List<ServiceRequest> queue = new ArrayList<>();
@@ -51,5 +51,10 @@ public class BaseStation {
             }
         }
         throw new NoSuchFieldException("All channels are currently busy.");
+    }
+
+    @Override
+    public void run() {
+
     }
 }
