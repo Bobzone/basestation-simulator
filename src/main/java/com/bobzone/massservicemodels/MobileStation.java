@@ -15,16 +15,11 @@ import java.util.concurrent.TimeUnit;
  */
 @SpringComponent
 @UIScope
-public class MobileStation {
+public class MobileStation implements Runnable{
 
     private BaseStation connectedBaseStation;
     private ServiceRequest request;
     double requestCreationInterval;
-
-//    public MobileStation(final double requestCreationInterval, final ScheduledExecutorService callingService){
-//        this.requestCreationInterval = requestCreationInterval;
-//        this.callingService = callingService;
-//    }
 
     public MobileStation(BaseStation baseStationToConnect, final double requestCreationInterval) {
         this.connectedBaseStation = baseStationToConnect;
@@ -47,5 +42,10 @@ public class MobileStation {
         } else {
             throw new NullPointerException("Attempt to send request, but given MS has no connected BS.");
         }
+    }
+
+    @Override
+    public void run() {
+        sendRequestToBaseStation();
     }
 }

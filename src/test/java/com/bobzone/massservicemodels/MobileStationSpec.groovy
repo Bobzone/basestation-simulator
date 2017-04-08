@@ -3,6 +3,11 @@ package com.bobzone.massservicemodels
 import spock.lang.Specification
 import spock.lang.Unroll
 
+import java.util.concurrent.Executors
+import java.util.concurrent.ScheduledExecutorService
+import java.util.concurrent.ScheduledFuture
+import java.util.concurrent.TimeUnit
+
 /**
  * Created by epiobob on 2017-04-07.
  */
@@ -38,7 +43,7 @@ class MobileStationSpec extends Specification {
         thrown NullPointerException
     }
     @Unroll
-    def "When sending requests to a certain BaseStation, requests appear on the BS"() {
+    def "When sending single request to a certain BaseStation, requests appear on the BS"() {
         given:
         def bs = new BaseStation()
         def ms = new MobileStation(bs, 2.0)
@@ -46,5 +51,20 @@ class MobileStationSpec extends Specification {
         ms.sendRequestToBaseStation();
         then:
         bs.channelList.get(0).busy
+    }
+
+    @Unroll
+    def "MS can start to send multiple requests at fixed rate, BS handles them"() {
+        given:
+        def bs = new BaseStation()
+        def ms = new MobileStation(bs, 2.0)
+        when:
+        ScheduledExecutorService executorService = Executors.newScheduledThreadPool(8);
+        executorService.scheduleAtFixedRate(ms, 1, 1, TimeUnit.SECONDS);
+        Thread.sleep(3000)
+        then:
+        bs.channelList.get(0).busy
+        bs.channelList.get(1).busy
+        bs.channelList.get(2).busy
     }
 }
