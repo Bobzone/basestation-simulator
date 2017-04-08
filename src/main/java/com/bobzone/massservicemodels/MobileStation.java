@@ -2,13 +2,6 @@ package com.bobzone.massservicemodels;
 
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.UIScope;
-import org.jsoup.Connection;
-import org.springframework.scheduling.annotation.Scheduled;
-
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Created by epiobob on 2017-04-07.
@@ -19,15 +12,9 @@ public class MobileStation implements Runnable {
 
     private BaseStation connectedBaseStation;
     private ServiceRequest request;
-    double requestCreationInterval;
 
-    public MobileStation(BaseStation baseStationToConnect, final double requestCreationInterval) {
-        this.connectedBaseStation = baseStationToConnect;
-        this.requestCreationInterval = requestCreationInterval;
-    }
-
-    public MobileStation(final double requestCreationInterval) {
-        this.requestCreationInterval = requestCreationInterval;
+    public MobileStation(BaseStation baseStationToConnect){
+        connectedBaseStation = baseStationToConnect;
     }
 
     public ServiceRequest generateServiceRequest(final double callLength) {
@@ -47,5 +34,9 @@ public class MobileStation implements Runnable {
     @Override
     public void run() {
         sendRequestToBaseStation();
+    }
+
+    public void setConnectedBaseStation(final BaseStation connectedBaseStation) {
+        this.connectedBaseStation = connectedBaseStation;
     }
 }

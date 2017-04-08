@@ -20,8 +20,8 @@ public class RNG {
         return k - 1;
     }
 
-    public static double getGaussian(double aMean, double aVariance) {
+    public static long getGaussian(double aMean, double aVariance) {
         Random fRandom = new Random();
-        return aMean + fRandom.nextGaussian() * aVariance;
+        return (long)(aMean + fRandom.nextGaussian() * aVariance);
     }
 }

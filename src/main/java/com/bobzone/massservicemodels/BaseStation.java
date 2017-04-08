@@ -58,6 +58,7 @@ public class BaseStation implements Runnable {
         final ServiceRequest request = queue.get(0);
         freeChannel.setRequest(request);
         queue.remove(request);
+//        TODO - probably we should move all the items in the queue to left when there are items moving from queue to channelList
 //        for (int i = 1; i < queue.size(); i++) {
 //            if (queue.get(i - 1) == null) {
 //                final ServiceRequest serviceRequest = queue.get(i);

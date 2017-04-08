@@ -2,7 +2,7 @@ package com.bobzone.massservicemodels;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Created by epiobob on 2017-04-05.
@@ -10,11 +10,12 @@ import java.util.UUID;
 public class Channel implements PropertyChangeListener{
 
     private String id;
+    private static AtomicInteger ID_GENERATOR = new AtomicInteger(1000);
     private boolean busy;
     private ServiceRequest request;
 
     public Channel(){
-        this.id = UUID.randomUUID().toString();
+        this.id = String.valueOf(ID_GENERATOR.getAndIncrement());
         request = null;
         this.busy = false;
     }
