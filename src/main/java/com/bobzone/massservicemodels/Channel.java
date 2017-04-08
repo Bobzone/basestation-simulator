@@ -1,7 +1,5 @@
 package com.bobzone.massservicemodels;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**

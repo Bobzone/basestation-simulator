@@ -2,8 +2,11 @@ package com.bobzone.massservicemodels;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
-import java.util.UUID;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import static java.util.concurrent.TimeUnit.SECONDS;
 
 
 /**
@@ -13,18 +16,21 @@ public class ServiceRequest implements Runnable {
     private AtomicInteger ID_GENERATOR = new AtomicInteger(1000);
 
     PropertyChangeSupport support = new PropertyChangeSupport(this);
+    ScheduledExecutorService finishRequestWorker = Executors.newSingleThreadScheduledExecutor();
 
     private String id;
-    double callLength;
+    long callLength;
 
     public ServiceRequest(final double callLength) {
-        this.callLength = callLength;
-//        id = UUID.randomUUID().toString();
+        this.callLength = RNG.getGaussian(MainUI.MEAN_INPUT_PARAM, MainUI.VARIATION_PARAM);
         id = String.valueOf(ID_GENERATOR.getAndIncrement());
+        finishRequestWorker.schedule(this, this.callLength, SECONDS);
     }
 
     public ServiceRequest() {
-        id = UUID.randomUUID().toString();
+        this.callLength = RNG.getGaussian(MainUI.MEAN_INPUT_PARAM, MainUI.VARIATION_PARAM);
+        id = String.valueOf(ID_GENERATOR.getAndIncrement());
+        finishRequestWorker.schedule(this, this.callLength, SECONDS);
     }
 
     void addPropertyChangeListener(final PropertyChangeListener l) {

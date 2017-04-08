@@ -20,7 +20,9 @@ import java.util.concurrent.TimeUnit;
 @Theme("valo")
 public class MainUI extends UI {
     // TODO - to be implemented for user input
-    private static final double LAMBDA_INPUT_PARAM = 2.0;
+    public static final double LAMBDA_INPUT_PARAM = 2.0;
+    public static final double MEAN_INPUT_PARAM = 30.0;
+    public static final double VARIATION_PARAM = 5.0;
 
     private HorizontalLayout mainLayout;
 
