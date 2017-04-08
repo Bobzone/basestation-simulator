@@ -46,7 +46,7 @@ class MobileStationBaseStationCommunicationSpec extends Specification {
         when:
         ScheduledExecutorService executorService = Executors.newScheduledThreadPool(8);
         executorService.scheduleAtFixedRate(ms, 1, 1, TimeUnit.SECONDS);
-        Thread.sleep(5000)
+        Thread.sleep(5500)
         then:
         bs.channelList.get(0).busy
         bs.channelList.get(1).busy

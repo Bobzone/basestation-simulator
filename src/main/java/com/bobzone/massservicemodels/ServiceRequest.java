@@ -33,9 +33,9 @@ public class ServiceRequest implements Runnable {
 
     public void finish() {
 //        support.firePropertyChange("id", id, ""); //-- not needed according to test written
-        support.firePropertyChange("request", null, null);
-        support.firePropertyChange("busy", null, false);
+//        support.firePropertyChange("request", null, null);
         System.err.println("finish() method on request " + this);
+        support.firePropertyChange("busy", null, false);
         id = "";
     }
 

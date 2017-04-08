@@ -39,8 +39,9 @@ public class Channel implements PropertyChangeListener{
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
+        System.err.println("propertyChange() method on Channel " + this);
         request = null;
-        busy = false;
+        busy = (boolean) evt.getNewValue();
     }
 
     @Override
