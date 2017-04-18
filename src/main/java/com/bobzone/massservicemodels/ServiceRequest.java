@@ -20,21 +20,21 @@ public class ServiceRequest implements Runnable {
     private static AtomicInteger ID_GENERATOR = new AtomicInteger(100);
 
     PropertyChangeSupport support = new PropertyChangeSupport(this);
-    ScheduledExecutorService finishRequestWorker = Executors.newSingleThreadScheduledExecutor();
+    private ScheduledExecutorService finishRequestWorker;
 
     private String id;
-    long callLength;
+    private long callLength;
 
-    public ServiceRequest(final double callLength) {
+    ServiceRequest(final double callLength) {
         this.callLength = RNG.getGaussian(MainUI.MEAN_INPUT_PARAM, MainUI.VARIATION_PARAM);
         id = String.valueOf(ID_GENERATOR.getAndIncrement());
-        log.info("Created new {} with generated call length {}", this, this.callLength);
+        log.info("Created new {} with generated call length {}", this, this.getCallLength());
     }
 
     public ServiceRequest() {
         this.callLength = RNG.getGaussian(MainUI.MEAN_INPUT_PARAM, MainUI.VARIATION_PARAM);
         id = String.valueOf(ID_GENERATOR.getAndIncrement());
-        log.info("Created new {} with generated call length {}", this, this.callLength);
+        log.info("Created new {} with generated call length {}", this, this.getCallLength());
     }
 
     void addPropertyChangeListener(final PropertyChangeListener l) {
@@ -45,6 +45,7 @@ public class ServiceRequest implements Runnable {
         log.info("{} is finished. Sending END_REQUEST event.", this);
         support.firePropertyChange("request", this, null);
         id = "";
+        finishRequestWorker.shutdown();
     }
 
     public String getId() {
@@ -64,6 +65,15 @@ public class ServiceRequest implements Runnable {
     }
 
     public void startFinishWorker() {
-        finishRequestWorker.schedule(this, this.callLength, SECONDS);
+        finishRequestWorker = Executors.newScheduledThreadPool(1);
+        finishRequestWorker.schedule(this, callLength, SECONDS);
+    }
+
+    public long getCallLength() {
+        return callLength;
+    }
+
+    public void decrementCallLength() {
+        callLength -= 1.0;
     }
 }

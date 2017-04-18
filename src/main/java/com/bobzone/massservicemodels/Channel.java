@@ -45,6 +45,9 @@ public class Channel {
         }
     }
 
+    public String getId() {
+        return id;
+    }
 
     @Override
     public String toString() {

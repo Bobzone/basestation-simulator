@@ -1,5 +1,6 @@
 package com.bobzone.massservicemodels;
 
+import com.vaadin.annotations.Push;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.UIScope;
 import org.slf4j.Logger;
@@ -10,6 +11,8 @@ import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Created by epiobob on 2017-04-05.
@@ -23,13 +26,16 @@ public class BaseStation implements Runnable, PropertyChangeListener {
     private String id;
     protected List<Channel> channelList = new ArrayList<>();
     protected List<ServiceRequest> queue = new ArrayList<>();
+    private volatile int currentQueueSize;
 
     private void assignChannel(final ServiceRequest request) {
         try {
-            findFreeChannel().setRequest(request);
-            queue.remove(request);
+            final Channel freeChannel = findFreeChannel();
             request.startFinishWorker();
-            log.info("Free channel found. {} has assigned channel and is removed from {} queue.", request, this);
+            freeChannel.setRequest(request);
+            queue.remove(request);
+            currentQueueSize = queue.size();
+            log.info("Free {} found. {} has assigned channel and is removed from {} queue. Current queue size: {}", freeChannel, request, this, currentQueueSize);
         } catch (IllegalStateException ex) {
             log.info(ex.getMessage() + " is currently busy. Leaving request in the queue.");
         } catch (NoSuchFieldException e) {
@@ -54,8 +60,9 @@ public class BaseStation implements Runnable, PropertyChangeListener {
     }
 
     public void acceptRequest(final ServiceRequest request) {
-        log.info("Accepting {}. Request lands on queue, BS checks if any channel is free.", request);
+        log.info("Accepting {}. Request lands on queue, BS checks if any channel is free. Current queue size: {}", request, currentQueueSize);
         queue.add(request);
+        currentQueueSize = queue.size();
         assignChannel(request);
     }
 
@@ -68,13 +75,15 @@ public class BaseStation implements Runnable, PropertyChangeListener {
         throw new NoSuchFieldException("All channels are currently busy.");
     }
 
-    protected void assignChannelFromQueue() throws NoSuchFieldException {
+    protected synchronized void assignChannelFromQueue() throws NoSuchFieldException {
         final Channel freeChannel = findFreeChannel();
         if (queue.size() != 0) {
             final ServiceRequest request = queue.get(0);
+            request.startFinishWorker();
             freeChannel.setRequest(request);
             queue.remove(request);
-            log.info("Periodic channel assignment moved {} from queue to {}", request, freeChannel);
+            currentQueueSize = queue.size();
+            log.info("Periodic channel assignment moved {} from queue to {}. Current queue size: {}", request, freeChannel, queue.size());
 
             queue = buildNewQueue();
         } else {
@@ -82,13 +91,13 @@ public class BaseStation implements Runnable, PropertyChangeListener {
         }
     }
 
-//    TODO - probably TERRIBLY inefficient. But it works.
-    private List<ServiceRequest> buildNewQueue(){
+    //    TODO - probably TERRIBLY inefficient. But it works.
+    private List<ServiceRequest> buildNewQueue() {
         log.debug("Moved all items in queue to the left.");
         List<ServiceRequest> newQueue = new ArrayList<>();
 
-        for (ServiceRequest sr : queue){
-            if (sr != null){
+        for (ServiceRequest sr : queue) {
+            if (sr != null) {
                 newQueue.add(sr);
             }
         }
@@ -98,7 +107,7 @@ public class BaseStation implements Runnable, PropertyChangeListener {
 
     @Override
     public void run() {
-        log.debug("Periodic channel assignment running.");
+        log.debug("Periodic channel assignment running. Items in queue: {}", queue.size());
         try {
             assignChannelFromQueue();
         } catch (NoSuchFieldException e) {
@@ -122,4 +131,18 @@ public class BaseStation implements Runnable, PropertyChangeListener {
                 "id='" + id + '\'' +
                 '}';
     }
+
+    public String getCurrentQueueSize() {
+        return String.valueOf(currentQueueSize);
+    }
+
+    public String getNumberOfFreeChannels() {
+        final long count = channelList.stream().filter(channel -> !channel.isBusy()).count();
+        return String.valueOf(count);
+    }
+
+    public String getChannelListSize(){
+        return String.valueOf(channelList.size());
+    }
+
 }
